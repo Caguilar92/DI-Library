@@ -5,7 +5,7 @@ package org.frost.util;
  **/
  class Frost {
 
-   public static void run(Class<?> classz) {
+   public static void run(Class<?> classz) {//parameter is for class in the package that should be scanned, all subpackages will also be scanned
 
    }
 
