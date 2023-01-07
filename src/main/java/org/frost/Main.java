@@ -9,8 +9,8 @@ import java.util.Scanner;
  **/
 public class Main {
     public static void main(String[] args) {
-        PackageScanner packageScanner = new PackageScanner(Main.class);
-        packageScanner.listOfClasses();
+        PackageScanner packageScanner = new PackageScanner();
+        System.out.println(packageScanner.listOfClasses(Main.class));
 
     }
 }
