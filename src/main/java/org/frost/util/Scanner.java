@@ -1,8 +1,7 @@
-package org.frost.packagescanner;
+package org.frost.util;
 
 /**
  * @author Candelario Aguilar Torres
  **/
 public class Scanner {
-
 }
