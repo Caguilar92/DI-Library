@@ -21,7 +21,7 @@ import java.util.List;
 
     }
 
-    public List<Class<?>> listOfClasses() {
+    public static List<Class<?>> listOfClasses() {
         InputStream classzStream = ClassLoader.getSystemResourceAsStream(this.packagePath.replaceAll("[.]","/"));//must change all . seprated paths by "/" or else classloader will throw null pointer exception
         BufferedReader classzBufferedStream = new BufferedReader(new InputStreamReader(classzStream));
         try {
