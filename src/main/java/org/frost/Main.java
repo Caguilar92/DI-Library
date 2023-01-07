@@ -1,16 +1,17 @@
 package org.frost;
 
-import org.frost.util.PackageScanner;
+import org.frost.util.AnnotationScanner;
+import org.frost.util.Component;
 
-import java.util.Scanner;
 
 /**
  * @author Candelario Aguilar Torres
  **/
+@Component
 public class Main {
     public static void main(String[] args) {
-        PackageScanner packageScanner = new PackageScanner();
-        System.out.println(packageScanner.listOfClasses(Main.class));
+        AnnotationScanner packageScanner = new AnnotationScanner();
+        System.out.println(packageScanner.findAnnotatedClasses(Main.class,Component.class));
 
     }
 }
