@@ -4,23 +4,53 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Candelario Aguilar Torres
  **/
- public class PackageScanner {
+  public class PackageScanner {
+    private final List<Class<?>> classList;
+    private final List<Class<?>> annotationList;
+
+
+
+    private PackageScanner(Builder builder) {
+        classList = new ArrayList<>();
+        annotationList = builder.annotationsList;
+        scan(builder.source.getPackageName(),classList);
+    }
+
+
+
+    public static class Builder {
+        private final List<Class<?>> annotationsList = new ArrayList<>();
+        private final Class<?> source;
+
+        public Builder(Class<?> source) {
+            this.source = source;
+        }
+        public Builder filterByAnnotation(Class<?> annotation) {
+            annotationsList.add(annotation);
+            return this;
+        }
+
+        public PackageScanner scan() {
+            return new PackageScanner(this);
+        }
+
+    }
+
+
+
+    private void scan(String path, List<Class<?>>classList) {
 
 
 
 
-    private List<Class<?>> listOfClasses(String path, List<Class<?>>list) {
-        List<Class<?>> classList = list;
-        String packagePath = path;
-
-
-        InputStream classzInputStream = ClassLoader.getSystemResourceAsStream(packagePath.replaceAll("[.]","/"));//must change all . seprated paths by "/" or else classloader will throw null pointer exception
+        InputStream classzInputStream = ClassLoader.getSystemResourceAsStream(path.replaceAll("[.]","/"));//must change all . seprated paths by "/" or else classloader will throw null pointer exception
         BufferedReader classzBufferedStream = new BufferedReader(new InputStreamReader(classzInputStream));
 
         try {
@@ -31,39 +61,61 @@ import java.util.List;
             while((line = classzBufferedStream.readLine()) != null) {
                 if(line.endsWith(".class")) {
                     while(packagesTraversed > 0) {
-                        packagePath = packagePath.substring(0,packagePath.lastIndexOf("."));
+                        path = path.substring(0,path.lastIndexOf("."));
                         packagesTraversed--;
                     }
-                    classList.add(stringNameToClass(line,packagePath));
+                    classList.add(classNameResolver(line,path));
                 } else {
-                    packagePath += "." + line;
+                    path += "." + line;
                     packagesTraversed++;
-                    listOfClasses(packagePath,classList);
+                    scan(path,classList);
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-        return classList;
+
+
+
     }
 
-    public List<Class<?>>listOfClasses(Class<?> classz) {
-        ArrayList<Class<?>> classList= new ArrayList<>();
-        String path = classz.getPackageName();
-        return listOfClasses(path,classList);
-    }
 
-    private Class<?> stringNameToClass(String classzName, String path) {
-        String fullyQualifiedPath = path + "." +classzName.substring(0,classzName.lastIndexOf("."));
+
+
+
+    private Class<?> classNameResolver(String className, String path) {
+        String fullyQualifiedPath = path + "." +className.substring(0,className.lastIndexOf("."));
         Class<?> classz = null;
 
         try {
             classz = Class.forName(fullyQualifiedPath);
         }catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         return classz;
     }
+
+    private List<Class<?>>filterClasses() {
+        List<Class<?>> filteredClasses = new ArrayList<>();
+        for(Class<?> classz : classList) {
+            for(Class<?> annotation : annotationList) {
+                if(classz.isAnnotationPresent((Class<? extends Annotation>) annotation)) {
+                    filteredClasses.add(classz);
+                }
+            }
+        }
+        return filteredClasses;
+    }
+
+    public List<Class<?>>getContextClasses() {
+        if(annotationList.isEmpty()) {
+            return classList;
+        }
+
+        return filterClasses();
+    }
+
+
 
 }
