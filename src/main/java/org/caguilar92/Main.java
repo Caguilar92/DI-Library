@@ -1,12 +1,12 @@
-package org.frost;
+package org.caguilar92;
 
 
-import org.frost.util.ContextConfiguration;
-import org.frost.util.PackageScanner;
-import org.frost.util.Scanner;
-import org.frost.util.annotations.Component;
-import org.frost.util.annotations.Repository;
-import org.frost.util.annotations.Service;
+import org.caguilar92.util.ContextConfiguration;
+import org.caguilar92.util.PackageScanner;
+import org.caguilar92.util.Scanner;
+import org.caguilar92.util.annotations.Component;
+import org.caguilar92.util.annotations.Repository;
+import org.caguilar92.util.annotations.Service;
 
 /**
  * @author Candelario Aguilar Torres

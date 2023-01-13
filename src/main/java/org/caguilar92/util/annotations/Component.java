@@ -1,4 +1,4 @@
-package org.frost.util.annotations;
+package org.caguilar92.util.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

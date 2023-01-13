@@ -1,6 +1,6 @@
-package org.frost.util.testclasses;
+package org.caguilar92.util.testclasses;
 
-import org.frost.util.annotations.Component;
+import org.caguilar92.util.annotations.Component;
 
 /**
  * @author Candelario Aguilar Torres
