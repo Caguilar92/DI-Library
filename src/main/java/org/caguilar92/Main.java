@@ -4,9 +4,9 @@ package org.caguilar92;
 import org.caguilar92.util.ContextConfiguration;
 import org.caguilar92.util.PackageScanner;
 import org.caguilar92.util.Scanner;
-import org.caguilar92.util.annotations.Component;
-import org.caguilar92.util.annotations.Repository;
-import org.caguilar92.util.annotations.Service;
+import org.caguilar92.util.test_annotations.Component;
+import org.caguilar92.util.test_annotations.Repository;
+import org.caguilar92.util.test_annotations.Service;
 
 /**
  * @author Candelario Aguilar Torres
