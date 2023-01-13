@@ -1,7 +1,9 @@
 package org.frost;
 
 
+import org.frost.util.ContextConfiguration;
 import org.frost.util.PackageScanner;
+import org.frost.util.Scanner;
 import org.frost.util.annotations.Component;
 import org.frost.util.annotations.Repository;
 import org.frost.util.annotations.Service;
@@ -13,12 +15,17 @@ import org.frost.util.annotations.Service;
 public class Main {
     public static void main(String[] args)  {
 
-        PackageScanner packageScanner = new PackageScanner.Builder(Main.class)
+        Scanner packageScanner = new PackageScanner.Builder(Main.class)
                 .filterByAnnotation(Component.class)
                 .filterByAnnotation(Service.class)
                 .filterByAnnotation(Repository.class)
                 .scan();
-        System.out.println(packageScanner.getContextClasses());
+
+
+
+
+        ContextConfiguration context = new ContextConfiguration(packageScanner);
+
 
 
 
