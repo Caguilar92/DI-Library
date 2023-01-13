@@ -7,45 +7,29 @@ import java.util.*;
 /**
  * @author Candelario Aguilar Torres
  **/
- class ContextConfiguration {
+ public class ContextConfiguration {
 
     private Map<Class<?>, Object> defaultContextObjects;
     private Map<Class<?>,Object> applicationContextObjects;
 
+    private Scanner scanner;
 
 
-
-    public void build(List<Class<?>>classList) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+public ContextConfiguration(Scanner scanner) {
+        this.scanner = scanner;
         this.defaultContextObjects = new HashMap<>();
         this.applicationContextObjects = new HashMap<>();
-        buildObjects(classList);
-        buildApplicationObjects();
+        buildDefaultContextObjects();
+}
+
+
+    private void buildDefaultContextObjects() {
+        hasDefaultConstructor(scanner.getContextClasses());
+
+
+
     }
 
-    private void buildApplicationObjects() throws InvocationTargetException, InstantiationException, IllegalAccessException {
-            ArrayList<Object> dependencies = new ArrayList<>();
-
-            for(Class<?> classz : defaultContextObjects.keySet()) {
-                Constructor<?>[] constructors = classz.getConstructors();
-                if(constructors.length == 1) {
-                    applicationContextObjects.put(classz,defaultContextObjects.get(classz));
-                } else {
-                    int constParamLength = 0;
-                    Constructor<?> constructor = null;
-                    for(Constructor<?> c : constructors) {
-                        Class<?>[] parameters = c.getParameterTypes();
-                        if(constructor == null) {
-                            constructor = c;
-                            constParamLength = parameters.length;
-
-                        } else if(parameters.length >= constParamLength) {
-                            constructor = c;
-                            constParamLength = parameters.length;
-                        }
-
-                        validateParameters(parameters);
-
-                        Arrays.stream(parameters).map(cl -> dependencies.add(defaultContextObjects.get(cl)));
 
 
 
@@ -53,54 +37,24 @@ import java.util.*;
 
 
 
+
+
+        private boolean hasDefaultConstructor(List<Class<?>> contextClasses) {
+            for(Class<?> classz : contextClasses) {
+                boolean hasDefaultconstructor = false;
+                for(Constructor<?> constructor : classz.getConstructors()) {
+                    if(constructor.getParameterCount() == 0) {
+                        hasDefaultconstructor = true;
                     }
                 }
-                System.out.println(classz.getName() + " constructor length " + constructors.length);
 
-            }
-
-
-
-    }
-
-
-
-        private boolean validateParameters(Class<?>[] parameters) {
-        String name = null;
-        try {
-            for(Class<?> classz : parameters)  {
-                name = classz.getName();
-                if(!classz.isAssignableFrom(defaultContextObjects.get(classz).getClass())) {
-
+                if(hasDefaultconstructor == false) {
+                    throw new IllegalStateException("0 args constructor required: 0 args constructor for " + classz + " not found");
                 }
             }
+
             return true;
-
-        } catch (NullPointerException e) {
-
-            throw new RuntimeException("Failed to Construct Object: no object of type " + name + " found. classList argument passed in build() method main not contain required class");
         }
-
-
-        }
-
-
-
-    private void buildObjects(List<Class<?>> classList) {
-        for(Class<?>classz: classList) {
-            try {
-                Constructor<?> defaultConstructor = classz.getConstructor();
-                Object object = defaultConstructor.newInstance();
-                this.defaultContextObjects.put(classz,object);
-
-            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-                     IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-
 
     public Map<Class<?>, Object>getContext() {
         return applicationContextObjects;

@@ -7,7 +7,9 @@ import org.frost.util.annotations.Component;
  **/
 @Component
 public class Car {
+    public Car() {
 
+    }
     public Car(Driver drive) {
 
     }

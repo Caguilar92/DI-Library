@@ -10,10 +10,25 @@ import java.util.List;
 
 /**
  * @author Candelario Aguilar Torres
+ *
+ * Scans the current package and sub-packages of the declared source for classes. This class can also filter the class search by annotations.
+ * This class implemnts the builder pattern to instantiate objects of this class.
+ *
+ * Example: Scanner packageScanner = new PackageScanner.Builder
+ *                                          .scan(Main.class); -> will search for all classess.
+ *
+ *        or  Scanner packageScanner = new PackageScanner.Builder
+ *                                          .filterByAnnotation(Component.class)
+ *                                          .filterByAnnotation(Service.class)
+ *                                          .scan(); -> will search for classess annoated with @Component and @Service.
+ *
  **/
-  public class PackageScanner {
-    private final List<Class<?>> classList;
-    private final List<Class<?>> annotationList;
+
+  public class PackageScanner implements Scanner{
+
+
+    private final List<Class<?>> classList; //collection of classes to be utilized by the user.
+    private final List<Class<?>> annotationList; //annotations user wants to use to filter classes.
 
 
 
@@ -107,7 +122,7 @@ import java.util.List;
         }
         return filteredClasses;
     }
-
+    @Override
     public List<Class<?>>getContextClasses() {
         if(annotationList.isEmpty()) {
             return classList;
