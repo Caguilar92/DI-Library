@@ -30,7 +30,7 @@ import java.util.List;
   public class PackageScanner implements Scanner{
 
 
-    private final List<Class<?>> classList; //collection of classes to be utilized by the user.
+    private final List<Class<?>> classList; //collection that will be used to load classes by the private scan() method .
     private final List<Class<?>> annotationList; //annotations user wants to use to filter classes.
 
 
@@ -101,12 +101,8 @@ import java.util.List;
     }
 
 
-    /**
-     *
-     * @param path the path of the source package to be scanned.
-     * @param classList
-     */
-    private void scan(String path, List<Class<?>>classList) {
+
+    private void scan(String path, List<Class<?>>classList) {  // path is obtained by the source.getPackageName() initialized in the private PackageScanner constructor.
 
 
 
