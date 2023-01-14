@@ -34,42 +34,87 @@ import java.util.List;
     private final List<Class<?>> annotationList; //annotations user wants to use to filter classes.
 
 
-
+    /**
+     * @param builder static inner class used to build the PackageScanner Object.
+     * The Constructor is private and can, in order to prevent instantiation from any outside entity.
+     * Objects of this class should only be created by this class' Builder inner class.
+     *
+     *    Example: Scanner packageScanner = new PackageScanner.Builder(Main.class)
+     *                                                         .scan(); -> when the scanners getClassContext() is called, all classes in the application will be returned.
+     *
+     *               Scanner packageScanner = new PackageScanner.Builder(Main.class)
+     *                                                         .filterByAnnotation(Component.class)
+     *                                                         .filterByAnnotation(Service.class)
+     *                                                         .scan();-> when the scanners getClassContext() is called, all classes annotated with the arguments of the
+     *                                                                      filterByAnnotation() method will be returned.
+     *
+     */
     private PackageScanner(Builder builder) {
         classList = new ArrayList<>();
         annotationList = builder.annotationsList;
-        scan(builder.source.getPackageName(),classList);
+        scan(builder.source.getPackageName(),classList);//pass in the path name and the reference to the list that the classes should be loaded into
     }
 
 
+        /**
+         * Builder class to build the PackageScanner Object. Users can get the all the classes
+         * scanned in the application by only calling the .scan() method, or they can filter out classes by annotations
+         * passed in the arguments of the .filterByAnnotation() within this class.
+         * Note: if the .filterByAnnotation() method is used, the Scanner object will still load all
+         * the classes into the arraylist member field. Only when the user request the objects through the
+         * getContextClasses() will the classes be filtered out and returned.
+         */
 
     public static class Builder {
         private final List<Class<?>> annotationsList = new ArrayList<>();
         private final Class<?> source;
 
+
+        /**
+         *@param source is the class within the package that is to be scanned. All packages
+         *               and sub-packages the source class belongs to will be scanned.
+         */
         public Builder(Class<?> source) {
+
             this.source = source;
         }
+
+            /**
+             *
+             * @param annotation is used to filter out classes when the .getContextClasses() method is used.
+             * @return the current Builder object.
+             */
         public Builder filterByAnnotation(Class<?> annotation) {
             annotationsList.add(annotation);
             return this;
         }
 
+        /**
+         * Creates a PackageScanner object with Builder initialized fields.
+         */
+
         public PackageScanner scan() {
+
             return new PackageScanner(this);
         }
 
     }
 
 
-
+    /**
+     *
+     * @param path the path of the source package to be scanned.
+     * @param classList
+     */
     private void scan(String path, List<Class<?>>classList) {
 
 
 
 
-        InputStream classzInputStream = ClassLoader.getSystemResourceAsStream(path.replaceAll("[.]","/"));//must change all . seprated paths by "/" or else classloader will throw null pointer exception
+        InputStream classzInputStream = ClassLoader.getSystemResourceAsStream(path.replaceAll("[.]","/"));//must change all . separated paths by "/" or else classloader will throw null pointer exception
+
         BufferedReader classzBufferedStream = new BufferedReader(new InputStreamReader(classzInputStream));
+
 
         try {
 
@@ -77,7 +122,9 @@ import java.util.List;
             int packagesTraversed = 0;
 
             while((line = classzBufferedStream.readLine()) != null) {
+
                 if(line.endsWith(".class")) {
+
                     while(packagesTraversed > 0) {
                         path = path.substring(0,path.lastIndexOf("."));
                         packagesTraversed--;
@@ -90,6 +137,7 @@ import java.util.List;
                 }
             }
         } catch (IOException e) {
+            System.out.println(e.getCause());
             e.printStackTrace();
         }
 

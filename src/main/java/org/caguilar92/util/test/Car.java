@@ -1,6 +1,6 @@
-package org.caguilar92.util.testclasses;
+package org.caguilar92.util.test;
 
-import org.caguilar92.util.test_annotations.Component;
+import org.caguilar92.util.annotations.Component;
 
 /**
  * @author Candelario Aguilar Torres
