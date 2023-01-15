@@ -179,7 +179,7 @@ import java.util.List;
     /*
     checks the classes in the classList for any annotations specified in the annotationList.
     If class is annotated, it is added to the local filteredClasses List.
-    When complete return List of filtered classess.
+    When complete return List of filtered classes.
      */
     private List<Class<?>>filterClasses() {
         List<Class<?>> filteredClasses = new ArrayList<>();
