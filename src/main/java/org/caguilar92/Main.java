@@ -13,7 +13,7 @@ public class Main {
                 .scan();
 
 
-        scanner.getContextClasses();
+        System.out.println(scanner.getContextClasses());
 
 
 

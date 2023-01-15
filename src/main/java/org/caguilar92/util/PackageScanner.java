@@ -101,39 +101,55 @@ import java.util.List;
     }
 
 
+    /*
+    Example flow for the method below:
+                path = "org.caguilar92"
+                Package is read for any line ending with .class
+                If line read does not end with .class, the line read is a package name("util" in this example).
+                "util" will be appended to the path. Now path = "org.caguilar92.util" and a recursive call is made passing in this new path.
+                When there are no more lines to be read in "org.caguilar92.util" control goes back to the first method call where the next line is read.
+                If the new line read ends with .class, the path and package need to be passed to the classNameResovler() in order to obtain an object of the class.
+                In order to this "util" needs to be removed from "org.cauilar92.util" because that path has already been scanned.
+                After removal the path is now "org.caguilar92" and the class name read can be passed to the classNameResolver();
 
-    private void scan(String path, List<Class<?>>classList) {  // path is obtained by the source.getPackageName() initialized in the private PackageScanner constructor.
+
+     */
+
+    private void scan(String path, List<Class<?>>classList) {//1.
 
 
 
+        InputStream classzInputStream = ClassLoader.getSystemResourceAsStream(path.replaceAll("[.]","/"));// path formatted to in order to be read by the ClassLoader. returns and inputstream of the package.
 
-        InputStream classzInputStream = ClassLoader.getSystemResourceAsStream(path.replaceAll("[.]","/"));//must change all . separated paths by "/" or else classloader will throw null pointer exception
-
-        BufferedReader classzBufferedStream = new BufferedReader(new InputStreamReader(classzInputStream));
-
+        BufferedReader classzBufferedStream = new BufferedReader(new InputStreamReader(classzInputStream));// wrap inputstream in BuffreredInputstream in order to read the stream one line at a time.
 
         try {
 
-            String line;
-            int packagesTraversed = 0;
+            String line; //stores the line read
+            boolean pathWasModified = false;//tracks if path has been modified.
 
-            while((line = classzBufferedStream.readLine()) != null) {
+
+
+            while((line = classzBufferedStream.readLine()) != null) { //read the line first then checks if its null
 
                 if(line.endsWith(".class")) {
 
-                    while(packagesTraversed > 0) {
-                        path = path.substring(0,path.lastIndexOf("."));
-                        packagesTraversed--;
-                    }
-                    classList.add(classNameResolver(line,path));
+                      if(pathWasModified) {
+                          path = path.substring(0, path.lastIndexOf("."));//remove appended package name from path
+                          pathWasModified = false;
+                      }
+
+
+                    classList.add(classNameResolver(line,path));// resolve string name to classObject and load into List.
                 } else {
-                    path += "." + line;
-                    packagesTraversed++;
-                    scan(path,classList);
+
+                    path += "." + line;//append package name to path to create a path to the new package
+                    pathWasModified = true;//because the new package name was appended, pathWasModified is now equal to true;
+                    scan(path,classList);//recursive call with the path to the new package
                 }
             }
         } catch (IOException e) {
-            System.out.println(e.getCause());
+
             e.printStackTrace();
         }
 
@@ -146,7 +162,9 @@ import java.util.List;
 
 
     private Class<?> classNameResolver(String className, String path) {
-        String fullyQualifiedPath = path + "." +className.substring(0,className.lastIndexOf("."));
+
+        String fullyQualifiedPath = path + "." +className.substring(0,className.lastIndexOf(".")); //concatenates the path and string name and removes the .class from the end of the string.
+
         Class<?> classz = null;
 
         try {
@@ -158,6 +176,11 @@ import java.util.List;
         return classz;
     }
 
+    /*
+    checks the classes in the classList for any annotations specified in the annotationList.
+    If class is annotated, it is added to the local filteredClasses List.
+    When complete return List of filtered classess.
+     */
     private List<Class<?>>filterClasses() {
         List<Class<?>> filteredClasses = new ArrayList<>();
         for(Class<?> classz : classList) {
@@ -171,11 +194,11 @@ import java.util.List;
     }
     @Override
     public List<Class<?>>getContextClasses() {
-        if(annotationList.isEmpty()) {
+        if(annotationList.isEmpty()) { //returns all classes in application if annotationList is empty.
             return classList;
         }
 
-        return filterClasses();
+        return filterClasses(); //returns List of classes annotated with the annotations in the annotationList.
     }
 
 
